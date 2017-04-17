@@ -1,0 +1,24 @@
+{
+	"name": "bcairns/silverstripe-imageprofiles",
+	"description": "Allows image profiles to be defined in Config, then generate URLs for \"lazy\", on-demand image creation",
+	"type": "silverstripe-module",
+	"homepage": "http://github.com/bcairns/silverstripe-imageprofiles",
+	"keywords": ["silverstripe", "image", "profiles", "module", "performance", "deferred", "lazy", "drupal"],
+	"license": "BSD-3-Clause",
+	"authors": [
+		{
+			"name": "Brian Cairns",
+			"email": "bcairns@gmail.com"
+		}
+	],
+	"support": {
+		"issues": "http://github.com/bcairns/silverstripe-imageprofiles/issues"
+	},
+	"require": {
+		"silverstripe/framework": ">=3.1.0"
+	},
+	"extra": {
+		"installer-name": "imageprofiles"
+	},
+	"target-dir": "imageprofiles"
+}

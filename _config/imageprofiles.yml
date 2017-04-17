@@ -1,0 +1,12 @@
+---
+name: imageprofiles
+---
+Image:
+  extensions:
+    - ImageProfiles
+Controller:
+  extensions:
+    - ImageProfiles_Controller
+SiteConfig:
+  extensions:
+    - ImageProfiles_SiteConfig
