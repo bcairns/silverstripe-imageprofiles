@@ -1,6 +1,6 @@
 {
 	"name": "bcairns/silverstripe-imageprofiles",
-	"description": "Allows image profiles to be defined in Config, then generate URLs for \"lazy\", on-demand image creation",
+	"description": "Allows image profiles to be defined in Config, then generate URLs for \"lazy loading\", on-demand image creation.",
 	"type": "silverstripe-module",
 	"homepage": "http://github.com/bcairns/silverstripe-imageprofiles",
 	"keywords": ["silverstripe", "image", "profiles", "module", "performance", "deferred", "lazy", "drupal"],
