@@ -88,7 +88,6 @@ class ImageProfiles extends DataExtension
 	 * @return  FieldList
 	 */
 	public function __call($method, $args) {
-		Debug::log("__call method: $method");
 		if( substr( $method, -3 ) == 'url' ){
 			$profile = self::$caseLookup[ substr( $method, 0, -3 ) ];
 			$method = 'ProfileURL';
