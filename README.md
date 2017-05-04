@@ -16,6 +16,7 @@ ImageProfiles:
     Small:
       - SetWidth: 100
     Medium:
+      - Quality: 95
       - SetWidth: 300
     Large:
       - SetWidth: 500
@@ -23,6 +24,8 @@ ImageProfiles:
       - SetWidth: 200
       - Pad: [200,200,'#f00']
 ```
+
+Commands may be any normal Image manipulation methods, or the `Quality` keyword which will set the image quality for steps remaining in the current profile.
 
 You can then use these profiles on any Image field:
 
@@ -38,6 +41,12 @@ $Image.Profile(Small)    // output <img> tag
 $Image.ProfileURL(Small) // just get the URL 
 ```
 
+And finally, if you wish to output the original image, you can use Original and OriginalURL. This can be useful in conjunction with [AssetProxy](https://github.com/bcairns/silverstripe-assetproxy) to allow missing images to be fetched remotely.
+
+```
+$Image.Original    // output <img> tag
+$Image.OriginalURL // just get the URL 
+```
 
 ## Flushing
 

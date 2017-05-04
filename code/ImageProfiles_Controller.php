@@ -23,10 +23,10 @@ class ImageProfiles_Controller extends Extension
 			$relPath = substr( $url, 17 + strlen($profile) );
 
 			if( $this->applyImageProfile( $profile, $relPath ) ){
-				$newPath = 'assets/_profiles/'.$profile.$relPath;
+				$newPath = '../assets/_profiles/'.$profile.$relPath;
 				header('Content-Type: '.HTTP::get_mime_type( $newPath ) );
 				header('Content-Length: '.filesize( $newPath ) );
-				readfile( '../'.$newPath );
+				readfile( $newPath );
 				exit;
 			}else{
 				return;
@@ -53,6 +53,8 @@ class ImageProfiles_Controller extends Extension
 
 		$steps = ImageProfiles::getProfiles()[$profile];
 
+		$quality = false;
+
 		foreach( $steps as $step ){
 
 			$format = array_keys( $step )[0];
@@ -62,10 +64,19 @@ class ImageProfiles_Controller extends Extension
 				$args = array( $format, $step[$format] );
 			}
 
+			if( $format == 'Quality' ){
+				$quality = $args[1];
+				continue;
+			}
+
 			$backend = Injector::inst()->createWithArgs($image::config()->backend, array(
 				Director::baseFolder()."/" . $source,
 				$args
 			));
+
+			if( $quality ){
+				$backend->setQuality( $quality );
+			}
 
 			if($backend->hasImageResource()) {
 
