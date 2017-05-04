@@ -22,12 +22,16 @@ class ImageProfiles_Controller extends Extension
 
 			$relPath = substr( $url, 17 + strlen($profile) );
 
-			$this->applyImageProfile( $profile, $relPath );
+			if( $this->applyImageProfile( $profile, $relPath ) ){
+				$newPath = 'assets/_profiles/'.$profile.$relPath;
+				header('Content-Type: '.HTTP::get_mime_type( $newPath ) );
+				header('Content-Length: '.filesize( $newPath ) );
+				readfile( '../'.$newPath );
+				exit;
+			}else{
+				return;
+			}
 
-			$newPath = 'assets/_profiles/'.$profile.$relPath;
-			header('Content-Type: '.HTTP::get_mime_type( $newPath ) );
-			readfile( '../'.$newPath );
-			exit;
 		}
 
 	}
@@ -82,8 +86,12 @@ class ImageProfiles_Controller extends Extension
 				} else {
 					user_error("Image::generateFormattedImage - Image $format public function not found.",E_USER_WARNING);
 				}
+			}else{
+				return false;
 			}
 		}
+
+		return true;
 
 	}
 
