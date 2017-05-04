@@ -49,7 +49,6 @@ When making any changes to the defined profiles, you must `flush` for new settin
 
 ## Planned Improvements
 
-* Make `<img>` output better and more customizable
 * Allow default `_profiles` folder to be changed
 
 ## Acknowledgements

@@ -23,11 +23,10 @@ class ImageProfiles extends DataExtension
 	}
 
 	/**
-	 * Ensure directory exists
 	 * We have to do this prior to the actual HTTP request, otherwise we get 403 instead of 404 for non-existent dirs
-	 * @param $rootPath root-relative path of file, eg "/assets/Uploads/foo.jpg"
+	 * @param $rootPath string root-relative path of file, eg "/assets/Uploads/foo.jpg"
 	 */
-	protected function verifyDirectoryExists($rootPath){
+	protected static function ensureDirectoryExists($rootPath){
 		$dirPath = dirname( Director::baseFolder() . $rootPath );
 		if( !file_exists($dirPath) ){
 			Filesystem::makeFolder($dirPath);
@@ -35,36 +34,65 @@ class ImageProfiles extends DataExtension
 	}
 
 	/**
+	 * Returns an <img> tag for the given URL
+	 * @see Image::getTag()
+	 * @param $url
+	 * @return string
+	 */
+	protected function tagMarkup($url){
+		$title = ($this->owner->Title) ? $this->owner->Title : $this->owner->Filename;
+		if($this->owner->Title) {
+			$title = Convert::raw2att($this->owner->Title);
+		} else {
+			if(preg_match("/([^\/]*)\.[a-zA-Z0-9]{1,6}$/", $title, $matches)) {
+				$title = Convert::raw2att($matches[1]);
+			}
+		}
+		return "<img src=\"$url\" alt=\"$title\" />";
+	}
+
+	/**
 	 * Returns an <img> tag for the requested profile
 	 * @param $profileName
 	 * @return string
-	 * todo: make this less shitty
 	 */
 	public function Profile($profileName){
-		return '<img src="'.$this->ProfileURL($profileName).'">';
+		return $this->tagMarkup( $this->ProfileURL($profileName) );
 	}
 
 	/**
 	 * Returns a URL for the requested profile
-	 * @param $profileName
+	 * @param $profileName string profile name, or "Original"
 	 * @return string
 	 */
 	public function ProfileURL($profileName){
-		$relPath = substr($this->owner->getRelativePath(), 6); // lop off "assets"
-		$rootPath = '/assets/_profiles/'.$profileName.$relPath;
-		if( array_key_exists($profileName, self::getProfiles())){
-			$this->verifyDirectoryExists($rootPath);
+		if( $profileName == 'Original' ){
+			return $this->OriginalURL();
+		}else{
+			$relPath = substr($this->owner->getRelativePath(), 6); // lop off "assets"
+			$rootPath = '/assets/_profiles/'.$profileName.$relPath;
+			if( array_key_exists($profileName, self::getProfiles())){
+				self::ensureDirectoryExists($rootPath);
+			}
+			return $rootPath;
 		}
-		return $rootPath;
 	}
 
+	/**
+	 * Returns an <img> tag for the original image
+	 * @return string
+	 */
 	public function Original(){
-		return '<img src="'.$this->OriginalURL().'">';
+		return $this->tagMarkup( $this->OriginalURL() );
 	}
 
+	/**
+	 * Returns URL of original image
+	 * @return string
+	 */
 	public function OriginalURL(){
 		$rootPath = '/' . $this->owner->getRelativePath();
-		$this->verifyDirectoryExists($rootPath);
+		self::ensureDirectoryExists($rootPath);
 		return $rootPath;
 	}
 
@@ -94,9 +122,9 @@ class ImageProfiles extends DataExtension
 	 * A wildcard method for accepting any Profile name as a method.
 	 * Ex: Thumbnail(), Small(), Large(), etc
 	 *
-	 * @param   string The method being called
-	 * @param   array The arguments to the method
-	 * @return  FieldList
+	 * @param $method string The method being called
+	 * @param $args array The arguments to the method
+	 * @return string
 	 */
 	public function __call($method, $args) {
 		if( substr( $method, -3 ) == 'url' ){
