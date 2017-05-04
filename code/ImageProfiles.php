@@ -23,18 +23,14 @@ class ImageProfiles extends DataExtension
 	}
 
 	/**
-	 * Ensure directory for this file exists in _profiles
+	 * Ensure directory exists
 	 * We have to do this prior to the actual HTTP request, otherwise we get 403 instead of 404 for non-existent dirs
-	 * @param $relPath path of file relative to assets/Uploads, includes starting slash
+	 * @param $rootPath root-relative path of file, eg "/assets/Uploads/foo.jpg"
 	 */
-	protected function verifyDirectoryExists($profile, $relPath){
-		// don't create folders for non-existent Profiles
-		if( array_key_exists($profile, self::getProfiles())){
-			$fullPath = Director::baseFolder() . '/assets/_profiles/' . $profile . $relPath;
-			$dirPath = dirname( $fullPath );
-			if( !file_exists($dirPath) ){
-				Filesystem::makeFolder($dirPath);
-			}
+	protected function verifyDirectoryExists($rootPath){
+		$dirPath = dirname( Director::baseFolder() . $rootPath );
+		if( !file_exists($dirPath) ){
+			Filesystem::makeFolder($dirPath);
 		}
 	}
 
@@ -55,8 +51,21 @@ class ImageProfiles extends DataExtension
 	 */
 	public function ProfileURL($profileName){
 		$relPath = substr($this->owner->getRelativePath(), 6); // lop off "assets"
-		$this->verifyDirectoryExists($profileName, $relPath);
-		return '/assets/_profiles/'.$profileName.$relPath;
+		$rootPath = '/assets/_profiles/'.$profileName.$relPath;
+		if( array_key_exists($profileName, self::getProfiles())){
+			$this->verifyDirectoryExists($rootPath);
+		}
+		return $rootPath;
+	}
+
+	public function Original(){
+		return '<img src="'.$this->OriginalURL().'">';
+	}
+
+	public function OriginalURL(){
+		$rootPath = '/' . $this->owner->getRelativePath();
+		$this->verifyDirectoryExists($rootPath);
+		return $rootPath;
 	}
 
 	/**
@@ -67,7 +76,9 @@ class ImageProfiles extends DataExtension
 	public function allMethodNames() {
 		$methods = array (
 			'profile',
-			'profileurl'
+			'profileurl',
+			'original',
+			'originalurl'
 		);
 		// add profile names
 		foreach( array_keys( self::getProfiles() ) as $profile ){
