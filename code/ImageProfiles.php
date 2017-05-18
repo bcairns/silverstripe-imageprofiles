@@ -40,15 +40,17 @@ class ImageProfiles extends DataExtension
 	 * @return string
 	 */
 	protected function tagMarkup($url){
-		$title = ($this->owner->Title) ? $this->owner->Title : $this->owner->Filename;
-		if($this->owner->Title) {
-			$title = Convert::raw2att($this->owner->Title);
-		} else {
-			if(preg_match("/([^\/]*)\.[a-zA-Z0-9]{1,6}$/", $title, $matches)) {
-				$title = Convert::raw2att($matches[1]);
+		if( $url ){
+			$title = ($this->owner->Title) ? $this->owner->Title : $this->owner->Filename;
+			if($this->owner->Title) {
+				$title = Convert::raw2att($this->owner->Title);
+			} else {
+				if(preg_match("/([^\/]*)\.[a-zA-Z0-9]{1,6}$/", $title, $matches)) {
+					$title = Convert::raw2att($matches[1]);
+				}
 			}
+			return "<img src=\"$url\" alt=\"$title\" />";
 		}
-		return "<img src=\"$url\" alt=\"$title\" />";
 	}
 
 	/**
@@ -66,15 +68,17 @@ class ImageProfiles extends DataExtension
 	 * @return string
 	 */
 	public function ProfileURL($profileName){
-		if( $profileName == 'Original' ){
-			return $this->OriginalURL();
-		}else{
-			$relPath = substr($this->owner->getRelativePath(), 6); // lop off "assets"
-			$rootPath = '/assets/_profiles/'.$profileName.$relPath;
-			if( array_key_exists($profileName, self::getProfiles())){
-				self::ensureDirectoryExists($rootPath);
+		if( $this->owner->ID ){
+			if( $profileName == 'Original' ){
+				return $this->OriginalURL();
+			}else{
+				$relPath = substr($this->owner->getRelativePath(), 6); // lop off "assets"
+				$rootPath = '/assets/_profiles/'.$profileName.$relPath;
+				if( array_key_exists($profileName, self::getProfiles())){
+					self::ensureDirectoryExists($rootPath);
+				}
+				return $rootPath;
 			}
-			return $rootPath;
 		}
 	}
 
@@ -91,9 +95,11 @@ class ImageProfiles extends DataExtension
 	 * @return string
 	 */
 	public function OriginalURL(){
-		$rootPath = '/' . $this->owner->getRelativePath();
-		self::ensureDirectoryExists($rootPath);
-		return $rootPath;
+		if( $this->owner->ID ){
+			$rootPath = '/' . $this->owner->getRelativePath();
+			self::ensureDirectoryExists($rootPath);
+			return $rootPath;
+		}
 	}
 
 	/**
